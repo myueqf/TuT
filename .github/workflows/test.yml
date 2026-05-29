@@ -158,6 +158,8 @@ jobs:
     needs: [ prepare, build ]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write
     env: 
       VERSION: ${{ needs.prepare.outputs.version }}
     steps:
