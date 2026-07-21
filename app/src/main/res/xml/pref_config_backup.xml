@@ -87,6 +87,18 @@
             app:iconSpaceReserved="false" />
 
         <io.legado.app.lib.prefs.Preference
+            android:key="full_backup"
+            android:summary="@string/full_backup_summary"
+            android:title="@string/full_backup"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
+            android:key="full_restore"
+            android:summary="@string/full_restore_summary"
+            android:title="@string/full_restore"
+            app:iconSpaceReserved="false" />
+
+        <io.legado.app.lib.prefs.Preference
             android:key="restoreIgnore"
             android:summary="@string/restore_ignore_summary"
             android:title="@string/restore_ignore"

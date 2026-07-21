@@ -1,7 +1,9 @@
 package io.legado.app.ui.config
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Process
 import android.os.Bundle
 import android.text.InputType
 import android.view.Menu
@@ -9,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.EditTextPreference
@@ -19,6 +22,7 @@ import io.legado.app.constant.AppLog
 import io.legado.app.constant.PreferKey
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.help.AppWebDav
+import io.legado.app.help.LifecycleHelp
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.LocalConfig
 import io.legado.app.help.coroutine.Coroutine
@@ -54,6 +58,9 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import splitties.init.appCtx
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class BackupConfigFragment : PreferenceFragment(),
     SharedPreferences.OnSharedPreferenceChangeListener,
@@ -103,6 +110,32 @@ class BackupConfigFragment : PreferenceFragment(),
     private val restoreOld = registerForActivityResult(HandleFileContract()) {
         it.uri?.let { uri ->
             ImportOldData.importUri(appCtx, uri)
+        }
+    }
+    private val createFullBackup = registerForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip")
+    ) { uri ->
+        uri?.let {
+            persistUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            LifecycleHelp.stopAllServices()
+            startActivity(
+                FullBackupActivity.intent(
+                    requireContext(), FullBackupActivity.MODE_BACKUP, it, Process.myPid()
+                )
+            )
+        }
+    }
+    private val openFullBackup = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let {
+            persistUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            LifecycleHelp.stopAllServices()
+            startActivity(
+                FullBackupActivity.intent(
+                    requireContext(), FullBackupActivity.MODE_RESTORE, it, Process.myPid()
+                )
+            )
         }
     }
 
@@ -235,9 +268,38 @@ class BackupConfigFragment : PreferenceFragment(),
             PreferKey.restoreIgnore -> backupIgnore()
             "web_dav_backup" -> backup()
             "web_dav_restore" -> restore()
+            "full_backup" -> confirmFullBackup()
+            "full_restore" -> confirmFullRestore()
             "import_old" -> restoreOld.launch()
         }
         return super.onPreferenceTreeClick(preference)
+    }
+
+    private fun confirmFullBackup() {
+        alert(R.string.full_backup) {
+            setMessage(R.string.full_backup_warning)
+            okButton {
+                val time = SimpleDateFormat("yyyyMMdd-HHmm", Locale.getDefault()).format(Date())
+                createFullBackup.launch("legado-full-$time.zip")
+            }
+            cancelButton()
+        }
+    }
+
+    private fun confirmFullRestore() {
+        alert(R.string.full_restore) {
+            setMessage(R.string.full_restore_warning)
+            okButton {
+                openFullBackup.launch(arrayOf("application/zip", "application/octet-stream"))
+            }
+            cancelButton()
+        }
+    }
+
+    private fun persistUriPermission(uri: android.net.Uri, flags: Int) {
+        runCatching {
+            requireContext().contentResolver.takePersistableUriPermission(uri, flags)
+        }
     }
 
     /**

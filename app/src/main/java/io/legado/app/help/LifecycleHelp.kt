@@ -57,6 +57,11 @@ object LifecycleHelp : Application.ActivityLifecycleCallbacks {
         this.appFinishedListener = appFinishedListener
     }
 
+    @Synchronized
+    fun stopAllServices() {
+        services.mapNotNull { it.get() }.forEach { it.stopSelf() }
+    }
+
     override fun onActivityPaused(activity: Activity) {
         LogUtils.d(TAG, "${activity::class.simpleName} onPause")
     }

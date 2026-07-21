@@ -67,7 +67,7 @@ val appDb by lazy {
 }
 
 @Database(
-    version = 75,
+    version = AppDatabase.DATABASE_VERSION,
     exportSchema = true,
     entities = [Book::class, BookGroup::class, BookSource::class, BookChapter::class,
         ReplaceRule::class, SearchBook::class, SearchKeyword::class, Cookie::class,
@@ -136,6 +136,7 @@ abstract class AppDatabase : RoomDatabase() {
 
     companion object {
 
+        const val DATABASE_VERSION = 75
         const val DATABASE_NAME = "legado.db"
 
         const val BOOK_TABLE_NAME = "books"

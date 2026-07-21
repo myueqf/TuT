@@ -120,6 +120,14 @@
             android:configChanges="locale|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode"
             android:exported="true"
             android:launchMode="singleTask" />
+        <activity
+            android:name=".ui.config.FullBackupActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:configChanges="keyboardHidden|orientation|screenSize|uiMode"
+            android:process=":full_data_transfer"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme.Light" />
         <!-- 阅读界面 -->
         <activity
             android:name=".ui.book.read.ReadBookActivity"

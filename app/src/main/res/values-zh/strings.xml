@@ -88,7 +88,6 @@
     <string name="check_add_bookshelf">是否将《%s》放入书架？</string>
     <string name="import_books_count">共 %s 个文本文件</string>
     <string name="is_loading">加载中…</string>
-    <string name="retry">重试</string>
     <string name="web_service">Web 服务</string>
     <string name="web_service_desc">用浏览器写源或看书</string>
     <string name="web_edit_source">Web 编辑书源</string>
@@ -737,6 +736,19 @@
     <string name="sort_by_url">地址排序</string>
     <string name="backup_summary">本地和 WebDav 一起备份</string>
     <string name="restore_summary">优先从 WebDav 恢复，长按从本地恢复</string>
+    <string name="full_backup">全量备份</string>
+    <string name="full_restore">全量恢复</string>
+    <string name="full_backup_summary">备份全部用户数据、离线缓存和可读取的本地书原文件</string>
+    <string name="full_restore_summary">清除当前用户数据后完整恢复，需要重启 APP</string>
+    <string name="full_backup_warning">全量备份会暂时关闭阅读，并导出数据库、配置、Cookie、账号信息、离线缓存和可读取的本地书。备份文件未加密，请勿分享。</string>
+    <string name="full_restore_warning">恢复前会完整校验备份，然后清除当前用户数据并覆盖。开始覆盖后不能取消，且不保留回滚副本。确认继续吗？</string>
+    <string name="full_transfer_stopping">正在停止 APP 的其他操作…</string>
+    <string name="full_transfer_success">操作成功</string>
+    <string name="full_transfer_failed">操作失败</string>
+    <string name="full_transfer_progress">已处理 %1$d 个文件，%2$s</string>
+    <string name="full_backup_skipped">有 %d 本本地书未能收集：</string>
+    <string name="return_to_app">返回阅读</string>
+    <string name="retry">重试</string>
     <string name="import_old_summary">选择旧版备份文件夹</string>
     <string name="enabled">已启用</string>
     <string name="disabled">已禁用</string>

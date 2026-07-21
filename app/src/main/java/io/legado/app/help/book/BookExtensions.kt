@@ -17,6 +17,7 @@ import io.legado.app.data.entities.BookSource
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.help.RuleBigDataHelp
 import io.legado.app.help.config.AppConfig
+import io.legado.app.help.storage.full.PortableFileResolver
 import io.legado.app.model.localBook.LocalBook
 import io.legado.app.utils.FileDoc
 import io.legado.app.utils.GSON
@@ -124,6 +125,13 @@ fun Book.getLocalUri(): Uri {
         localUriCache[bookUrl] = uri
     }?.let {
         return uri
+    }
+    PortableFileResolver.resolveBook(appCtx, bookUrl)?.let { portableUri ->
+        portableUri.inputStream(appCtx).getOrNull()?.use {
+            localUriCache[bookUrl] = portableUri
+        }?.let {
+            return portableUri
+        }
     }
     //不同的设备书籍保存路径可能不一样, uri无效时尝试寻找当前保存路径下的文件
     val defaultBookDir = AppConfig.defaultBookTreeUri

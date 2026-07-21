@@ -89,7 +89,6 @@
     <string name="check_add_bookshelf">Would you like to add %s to your Bookshelf?</string>
     <string name="import_books_count">%s text file(s) in total</string>
     <string name="is_loading">Loading…</string>
-    <string name="retry">Retry</string>
     <string name="web_service">Web service</string>
     <string name="web_service_desc">Web edit source and read book</string>
     <string name="web_edit_source">Edit book sources on the web</string>
@@ -739,6 +738,19 @@
     <string name="sort_by_url">Sort by URL</string>
     <string name="backup_summary">Backup the local and WebDav simultaneously</string>
     <string name="restore_summary">Restore from WebDAV first, Restore form the local backup on long click</string>
+    <string name="full_backup">Full backup</string>
+    <string name="full_restore">Full restore</string>
+    <string name="full_backup_summary">Back up all user data, offline content, and readable local books</string>
+    <string name="full_restore_summary">Replace all current user data and restart the app</string>
+    <string name="full_backup_warning">The app will restart and export databases, settings, cookies, accounts, offline content, and readable local books. The archive is not encrypted; do not share it.</string>
+    <string name="full_restore_warning">The archive will be verified before current user data is deleted and replaced. Restore cannot be cancelled after deletion starts and no rollback copy is kept. Continue?</string>
+    <string name="full_transfer_stopping">Stopping other app operations…</string>
+    <string name="full_transfer_success">Operation completed</string>
+    <string name="full_transfer_failed">Operation failed</string>
+    <string name="full_transfer_progress">Processed %1$d files, %2$s</string>
+    <string name="full_backup_skipped">%d local books could not be collected:</string>
+    <string name="return_to_app">Return to Legado</string>
+    <string name="retry">Retry</string>
     <string name="import_old_summary">Select a legacy backup folder</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>

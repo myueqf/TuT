@@ -8,7 +8,9 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Build
+import android.os.Process
 import com.github.liuyueyi.quick.transfer.constants.TransType
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.jeremyliao.liveeventbus.logger.DefaultLogger
@@ -50,7 +52,9 @@ import io.legado.app.help.http.okHttpClient
 import io.legado.app.help.rhino.NativeBaseSource
 import io.legado.app.help.source.SourceHelp
 import io.legado.app.help.storage.Backup
+import io.legado.app.help.storage.full.FullBackupControl
 import io.legado.app.model.BookCover
+import io.legado.app.ui.config.FullBackupActivity
 import io.legado.app.utils.ChineseUtils
 import io.legado.app.utils.LogUtils
 import io.legado.app.utils.defaultSharedPreferences
@@ -70,11 +74,25 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        oldConfig = Configuration(resources.configuration)
+        if (FullBackupControl.isTransferProcess()) {
+            return
+        }
+        FullBackupControl.pendingRestoreUri(this)?.let { restoreUri ->
+            startActivity(
+                FullBackupActivity.intent(
+                    this,
+                    FullBackupActivity.MODE_RESTORE,
+                    Uri.parse(restoreUri),
+                    Process.myPid(),
+                ).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+            return
+        }
         CrashHandler(this)
         if (isDebuggable) {
             ThreadUtils.setThreadAssertsDisabledForTesting(true)
         }
-        oldConfig = Configuration(resources.configuration)
         applyDayNightInit(this)
         registerActivityLifecycleCallbacks(LifecycleHelp)
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(AppConfig)
@@ -128,11 +146,16 @@ class App : Application() {
     }
 
     override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(AppContextWrapper.wrap(base))
+        if (FullBackupControl.isTransferProcess()) {
+            super.attachBaseContext(base)
+        } else {
+            super.attachBaseContext(AppContextWrapper.wrap(base))
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
+        if (FullBackupControl.isTransferProcess()) return
         val diff = newConfig.diff(oldConfig)
         if ((diff and ActivityInfo.CONFIG_UI_MODE) != 0) {
             applyDayNight(this)

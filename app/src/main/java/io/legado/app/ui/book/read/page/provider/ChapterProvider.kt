@@ -17,6 +17,7 @@ import io.legado.app.data.entities.BookChapter
 import io.legado.app.help.book.BookContent
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
+import io.legado.app.help.storage.full.PortableFileResolver
 import io.legado.app.model.ImageProvider
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.page.entities.TextChapter
@@ -882,27 +883,33 @@ object ChapterProvider {
     }
 
     private fun getTypeface(fontPath: String): Typeface? {
-        return kotlin.runCatching {
-            when {
-                fontPath.isContentScheme() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+        fun load(path: String): Typeface? {
+            return when {
+                path.isContentScheme() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
                     appCtx.contentResolver
-                        .openFileDescriptor(Uri.parse(fontPath), "r")!!
+                        .openFileDescriptor(Uri.parse(path), "r")!!
                         .use {
                             Typeface.Builder(it.fileDescriptor).build()
                         }
                 }
 
-                fontPath.isContentScheme() -> {
-                    Typeface.createFromFile(RealPathUtil.getPath(appCtx, Uri.parse(fontPath)))
+                path.isContentScheme() -> {
+                    Typeface.createFromFile(RealPathUtil.getPath(appCtx, Uri.parse(path)))
                 }
 
-                fontPath.isNotEmpty() -> Typeface.createFromFile(fontPath)
+                path.isNotEmpty() -> Typeface.createFromFile(path)
                 else -> when (AppConfig.systemTypefaces) {
                     1 -> Typeface.SERIF
                     2 -> Typeface.MONOSPACE
                     else -> Typeface.SANS_SERIF
                 }
             }
+        }
+        return kotlin.runCatching {
+            load(fontPath)
+        }.recoverCatching { originalError ->
+            PortableFileResolver.resolveFont(appCtx, fontPath)?.let(::load)
+                ?: throw originalError
         }.getOrElse {
             ReadBookConfig.textFont = ""
             ReadBookConfig.save()
