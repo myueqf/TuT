@@ -190,40 +190,30 @@ fun Activity.keepScreenOn(on: Boolean) {
 @Suppress("DEPRECATION")
 fun Activity.applyRefreshRatePreference() {
     val layoutParams = window.attributes
-    if (!AppConfig.highRefreshRate) {
-        var changed = layoutParams.preferredRefreshRate != 0f
-        layoutParams.preferredRefreshRate = 0f
+    val refreshRate = if (AppConfig.highRefreshRate) {
+        val display = windowManager.defaultDisplay
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            changed = changed || layoutParams.preferredDisplayModeId != 0
-            layoutParams.preferredDisplayModeId = 0
+            val currentMode = display.mode
+            display.supportedModes
+                .asSequence()
+                .filter {
+                    it.physicalWidth == currentMode.physicalWidth &&
+                        it.physicalHeight == currentMode.physicalHeight
+                }
+                .maxOfOrNull { it.refreshRate }
+                ?: display.refreshRate
+        } else {
+            display.supportedRefreshRates.maxOrNull() ?: display.refreshRate
         }
-        if (changed) window.attributes = layoutParams
-        return
-    }
-
-    val display = windowManager.defaultDisplay
-    val refreshRate: Float
-    var displayModeId = 0
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val currentMode = display.mode
-        val preferredMode = display.supportedModes
-            .asSequence()
-            .filter {
-                it.physicalWidth == currentMode.physicalWidth &&
-                    it.physicalHeight == currentMode.physicalHeight
-            }
-            .maxByOrNull { it.refreshRate }
-        refreshRate = preferredMode?.refreshRate ?: display.refreshRate
-        displayModeId = preferredMode?.modeId ?: 0
     } else {
-        refreshRate = display.supportedRefreshRates.maxOrNull() ?: display.refreshRate
+        0f
     }
 
     var changed = layoutParams.preferredRefreshRate != refreshRate
     layoutParams.preferredRefreshRate = refreshRate
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        changed = changed || layoutParams.preferredDisplayModeId != displayModeId
-        layoutParams.preferredDisplayModeId = displayModeId
+        changed = changed || layoutParams.preferredDisplayModeId != 0
+        layoutParams.preferredDisplayModeId = 0
     }
     if (changed) window.attributes = layoutParams
 }
