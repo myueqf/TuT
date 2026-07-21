@@ -58,4 +58,12 @@ class FullBackupArchiveTest {
         assertTrue(json.contains("\"databaseVersion\":75"))
         assertTrue(json.contains("\"lastModified\":3"))
     }
+
+    @Test
+    fun manifestPathIsSeparateFromDataEntries() {
+        val observed = hashSetOf("internal/files/a")
+
+        assertTrue(FullBackupArchive.MANIFEST_PATH !in observed)
+        FullBackupArchive.requireSafeEntryPath(FullBackupArchive.MANIFEST_PATH)
+    }
 }

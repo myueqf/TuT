@@ -165,14 +165,12 @@ class FullBackupEngine(private val context: Context) {
                 val path = entry.name
                 FullBackupArchive.requireSafeEntryPath(path)
                 if (entry.isDirectory) continue
-                check(path !in observed && path != FullBackupArchive.MANIFEST_PATH) {
-                    "备份中存在重复路径: $path"
-                }
                 if (path == FullBackupArchive.MANIFEST_PATH) {
                     check(manifest == null) { "备份中存在重复清单" }
                     val text = zip.readBytesLimited(MAX_MANIFEST_SIZE).toString(Charsets.UTF_8)
                     manifest = gson.fromJson(text, FullBackupManifest::class.java)
                 } else {
+                    check(path !in observed) { "备份中存在重复路径: $path" }
                     val digest = MessageDigest.getInstance("SHA-256")
                     val dbOutput = if (path == DATABASE_ARCHIVE_PATH) FileOutputStream(preflightDb) else null
                     var entrySize = 0L
