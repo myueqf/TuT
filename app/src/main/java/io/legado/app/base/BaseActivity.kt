@@ -29,6 +29,7 @@ import io.legado.app.ui.widget.TitleBar
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.applyBackgroundTint
 import io.legado.app.utils.applyOpenTint
+import io.legado.app.utils.applyRefreshRatePreference
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.disableAutoFill
 import io.legado.app.utils.fullScreen
@@ -111,6 +112,11 @@ abstract class BaseActivity<VB : ViewBinding>(
     }
 
     abstract fun onActivityCreated(savedInstanceState: Bundle?)
+
+    override fun onResume() {
+        super.onResume()
+        applyRefreshRatePreference()
+    }
 
     final override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val bool = onCompatCreateOptionsMenu(menu)

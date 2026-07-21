@@ -263,6 +263,9 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
     val noAnimScrollPage: Boolean
         get() = appCtx.getPrefBoolean(PreferKey.noAnimScrollPage, false)
 
+    val highRefreshRate: Boolean
+        get() = appCtx.getPrefBoolean(PreferKey.highRefreshRate, false)
+
     const val defaultSpeechRate = 5
 
     var ttsSpeechRate: Int
@@ -739,4 +742,3 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
         }
 
 }
-

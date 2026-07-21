@@ -107,6 +107,7 @@ object PreferKey {
     const val disableHorizontalPageSnap = "disableHorizontalPageSnap"
     const val enableMangaGray = "enableMangaGray"
     const val autoRefresh = "auto_refresh"
+    const val highRefreshRate = "highRefreshRate"
     const val defaultToRead = "defaultToRead"
     const val exportCharset = "exportCharset"
     const val exportUseReplace = "exportUseReplace"
