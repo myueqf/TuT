@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 import androidx.fragment.app.DialogFragment
 import io.legado.app.R
-import io.legado.app.help.config.AppConfig
 import io.legado.app.ui.widget.dialog.TextDialog
 
 inline fun <reified T : DialogFragment> AppCompatActivity.showDialogFragment(
@@ -185,37 +184,6 @@ fun Activity.keepScreenOn(on: Boolean) {
     } else {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
-}
-
-@Suppress("DEPRECATION")
-fun Activity.applyRefreshRatePreference() {
-    val layoutParams = window.attributes
-    val refreshRate = if (AppConfig.highRefreshRate) {
-        val display = windowManager.defaultDisplay
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val currentMode = display.mode
-            display.supportedModes
-                .asSequence()
-                .filter {
-                    it.physicalWidth == currentMode.physicalWidth &&
-                        it.physicalHeight == currentMode.physicalHeight
-                }
-                .maxOfOrNull { it.refreshRate }
-                ?: display.refreshRate
-        } else {
-            display.supportedRefreshRates.maxOrNull() ?: display.refreshRate
-        }
-    } else {
-        0f
-    }
-
-    var changed = layoutParams.preferredRefreshRate != refreshRate
-    layoutParams.preferredRefreshRate = refreshRate
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        changed = changed || layoutParams.preferredDisplayModeId != 0
-        layoutParams.preferredDisplayModeId = 0
-    }
-    if (changed) window.attributes = layoutParams
 }
 
 fun Activity.toggleSystemBar(show: Boolean) {

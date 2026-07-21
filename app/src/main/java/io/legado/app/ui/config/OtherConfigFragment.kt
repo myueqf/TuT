@@ -29,7 +29,6 @@ import io.legado.app.service.WebService
 import io.legado.app.ui.file.HandleFileContract
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.utils.LogUtils
-import io.legado.app.utils.applyRefreshRatePreference
 import io.legado.app.utils.getPrefBoolean
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.putPrefBoolean
@@ -199,7 +198,6 @@ class OtherConfigFragment : PreferenceFragment(),
             }
 
             PreferKey.showDiscovery, PreferKey.showRss -> postEvent(EventBus.NOTIFY_MAIN, true)
-            PreferKey.highRefreshRate -> activity?.applyRefreshRatePreference()
             PreferKey.language -> listView.postDelayed(1000) {
                 appCtx.restart()
             }
